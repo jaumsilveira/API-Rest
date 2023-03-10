@@ -1,0 +1,48 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
+
+
+class Student(BaseModel):
+    id: int | None
+    name: str
+    age: int
+    email: str | None = None
+    phone: str | None = None
+
+students = [
+    {
+        "id": 1,
+        "name": "John Doe",
+        "age": 20,
+        "email": "john.doe@example.com",
+        "phone": "123456789"
+    }
+]
+
+@app.get("/students")
+async def get_students():
+    return students
+
+@app.get("/students/{id}")
+async def get_students_by_id(id: int):
+    for s in students:
+        if s["id"] == id:
+            return s
+
+    raise HTTPException(status_code=404, detail="Student not found")
+
+@app.post("/students")
+async def create_students(student: Student):
+    return student
+
+@app.delete("/students/{id}")
+async def delete_students(id: int):
+    return
